@@ -1,5 +1,7 @@
 # demoHtml
-A Demo HTML Site from the Computing Fundamentals Course
+
+Site in production.
 
 # Author
-Petar Petrovic
+
+ansalens
