@@ -1,10 +1,124 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+	<title> writeups </title>
+	<link rel="icon" href="favicon.ico">
+	<style>
+		body {background-color:#e5f0ef; text-align: center}
+		p {font-size: 115%; font-family: hack; text-align: left; padding: 0px 70px 10px}
+		h2 {font-size: 150%; font-family: hack; text-align: left; padding: 0px 70px 10px}
+		h1 {font-size: 250%; font-family: hack; text-align: left; padding: 0px 70px 10px}
+		code {font-size: 150%; text-align: left; padding: 0px 70px 10px}
+		pre {font-size: 115%; font-family: hack; text-align: left; padding: 0px 70px 10px}
+		img {padding: 0px 100px 10px}
+	</style>
+</head>
 <body>
+	<h1> bandit16 writeup </h1>
+	<hr>
+	<p>
+		Hi everyone.<br> Today I will be showing how to solve bandit level 16 from <a href="https://overthewire.org/wargames/bandit/bandit17.html" target="_blank">overthewire.</a><br>
+		This is my first writeup, and first time making a site, I know it sucks ass, <br>web dev is not really my thing, but gotta grasp some basics about it. <br> This is just a part of the <a href="https://www.roppers.org/courses/fundamentals" target="_blank">course</a> I am taking, which I really recommend for<br> everyone starting out in IT. Dennis if you're reading this, then you rock,<br> you are the teacher I wished I had when I was just starting.
+	</p>
 
-<h1>Hello!</h1>
+	<h2> Level description </h2>
+	<p>
+		<b>User</b>: bandit16<br>
+		<b>Password</b>: JQttfApK4SeyHwDlI9SXGR50qclOAil1<br>
+		<b>Level goal</b>: The credentials for the next level can be retrieved by <br>submitting the password of the current level to a port on localhost in the<br> range <i>31000 to 32000</i>. First find out which of these ports have a server <br><b>listening on them</b>. Then find out which of those <b>speak SSL</b> and which don’t. <br>There is <i><b>only 1</b></i> server that will give the next credentials, the others <br>will simply send back to you whatever you send to it.<br>
+		<b>Commands</b>: ssh, nmap, openssl<br>
+	</p>
+	<h2> Solution </h2>
+	<p>
+		First, lets SSH into the box:<br><br>
+		<code> $ ssh bandit.labs.overthewire.org -p 2220 -l bandit16 </code><br><br>
+		Now we need to see which ports are open in range <i>31000 to 32000</i>, <br>to do that I will be using nmap which is famous port scanner.<br>
+		<pre>bandit16@bandit:~$ nmap -p31000-32000 localhost -vv
+--snip--
+Completed Connect Scan at 05:42, 0.11s elapsed (1001 total ports)
+Nmap scan report for localhost (127.0.0.1)
+Host is up, received conn-refused (0.00022s latency).
+Scanned at 2024-05-08 05:42:39 UTC for 0s
+Not shown: 862 closed ports
+Reason: 862 conn-refused
+PORT      STATE SERVICE      REASON
+31000/tcp open  unknown      syn-ack
+31001/tcp open  unknown      syn-ack
+31002/tcp open  unknown      syn-ack
+31003/tcp open  unknown      syn-ack
+31004/tcp open  unknown      syn-ack
+31005/tcp open  unknown      syn-ack
+31006/tcp open  unknown      syn-ack
+31007/tcp open  unknown      syn-ack
+31008/tcp open  unknown      syn-ack
+31009/tcp open  unknown      syn-ack
+31010/tcp open  unknown      syn-ack
+31011/tcp open  unknown      syn-ack
+--snip--
+	</pre></p>
+	<p>
+		That's a lot of ports to pick from. Some of them speak SSL but others don't. <br>To figure out that, I'm gonna be using nmap <a href="https://nmap.org/nsedoc/scripts/ssl-enum-ciphers.html" target="_blank">ssl-enum-ciphers</a> script.
+		<pre>bandit16@bandit:~$ nmap -p31000-32000 localhost --script=ssl-enum-ciphers
+31518/tcp open  unknown
+| ssl-enum-ciphers: 
+|   TLSv1.2: 
+|     ciphers: 
+|       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A
+|       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 (secp256r1) - A
+|       TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (secp256r1) - A
+|       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA (secp256r1) - A
+|       TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384 (secp256r1) - A
+|       TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (secp256r1) - A
+|       TLS_ECDHE_RSA_WITH_ARIA_128_GCM_SHA256 (secp256r1) - A
+|       TLS_ECDHE_RSA_WITH_ARIA_256_GCM_SHA384 (secp256r1) - A
+|       TLS_ECDHE_RSA_WITH_CAMELLIA_128_CBC_SHA256 (secp256r1) - A
+|       TLS_ECDHE_RSA_WITH_CAMELLIA_256_CBC_SHA384 (secp256r1) - A
+|       TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256 (secp256r1) - A
+|       TLS_RSA_WITH_AES_128_CBC_SHA (rsa 2048) - A
+|       TLS_RSA_WITH_AES_128_CBC_SHA256 (rsa 2048) - A
+|       TLS_RSA_WITH_AES_128_CCM (rsa 2048) - A
+|       TLS_RSA_WITH_AES_128_CCM_8 (rsa 2048) - A
+|       TLS_RSA_WITH_AES_128_GCM_SHA256 (rsa 2048) - A
+|       TLS_RSA_WITH_AES_256_CBC_SHA (rsa 2048) - A
+|       TLS_RSA_WITH_AES_256_CBC_SHA256 (rsa 2048) - A
+|       TLS_RSA_WITH_AES_256_CCM (rsa 2048) - A
+|       TLS_RSA_WITH_AES_256_CCM_8 (rsa 2048) - A
+|       TLS_RSA_WITH_AES_256_GCM_SHA384 (rsa 2048) - A
+|       TLS_RSA_WITH_ARIA_128_GCM_SHA256 (rsa 2048) - A
+|       TLS_RSA_WITH_ARIA_256_GCM_SHA384 (rsa 2048) - A
+|       TLS_RSA_WITH_CAMELLIA_128_CBC_SHA (rsa 2048) - A
+|       TLS_RSA_WITH_CAMELLIA_128_CBC_SHA256 (rsa 2048) - A
+|       TLS_RSA_WITH_CAMELLIA_256_CBC_SHA (rsa 2048) - A
+|       TLS_RSA_WITH_CAMELLIA_256_CBC_SHA256 (rsa 2048) - A
+|     compressors: 
+|       NULL
+|     cipher preference: client
+|     warnings: 
+|       Weak certificate signature: SHA1
+|_  least strength: A
+31691/tcp open  unknown
+31790/tcp open  unknown
+| ssl-enum-ciphers: 
+|   TLSv1.2: 
+|     ciphers: 
+|       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA (secp256r1) - A
+|       TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256 (secp256r1) - A
+|       TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (secp256r1) - A
+--snip--
+	</pre>
+	</p>
+	<p> On ports that do speak SSL, there's a lot more output. <br>Those ports are: <b>31518 and 31790.</b><br>
+	Let's connect to each and try sending in the password, the syntax from manpages is this:<br> openssl s_client -connect server:port<br>
+	</p>
+	<pre>bandit16@bandit:~$ openssl s_client -connect localhost:31518</pre>
+	<img src="pics/bandit16/incorrectport.png" align="left">
+	<p>We can see this port is dead end, because it just returned us the same password we sent it.<br>Then let's try the other port:<br></p>
+	<pre>bandit16@bandit:~$ openssl s_client -connect localhost:31790</pre>
+	<img src="pics/bandit16/solution.png">
 
-<p>This is my first website. Wazzup!!!</p>
+	<p><br>Voila! We get a private ssh key for the next level! <br> I hope you learned something....<br>Until next time.<br></p>
 
 </body>
+
+
 </html>
