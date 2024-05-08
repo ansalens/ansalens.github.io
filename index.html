@@ -1,25 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 	<title> writeups </title>
 	<link rel="icon" href="favicon.ico">
 	<style>
-		body {background-color:#e5f0ef; text-align: center}
+		body {text-align: center}
 		p {font-size: 115%; font-family: hack; text-align: left; padding: 0px 70px 10px}
 		h2 {font-size: 150%; font-family: hack; text-align: left; padding: 0px 70px 10px}
 		h1 {font-size: 250%; font-family: hack; text-align: left; padding: 0px 70px 10px}
 		code {font-size: 150%; text-align: left; padding: 0px 70px 10px}
 		pre {font-size: 115%; font-family: hack; text-align: left; padding: 0px 70px 10px}
 		img {padding: 0px 100px 10px}
+
+		/* For dark/light theme */
+		:root {
+		  --grid-unit: 1rem;
+		  --border-radius-base: 0.5rem;
+		}
+
+		[data-theme="light"] {
+		  --color-bg: #e5f0ef;
+		  --color-fg: #000000;
+		}
+
+		[data-theme="dark"] {
+		  --color-bg: #000000;
+		  --color-fg: #4AF626;
+		}
+
+		body {
+		  background-color: var(--color-bg);
+		  color: var(--color-fg);
+		}
 	</style>
 </head>
+
 <body>
+	<button
+		onclick="toggleTheme()"
+		type="button"
+		data-theme-toggle
+		aria-label="Toggle theme"
+		>Change theme</button>
+	<script type="text/javascript">
+		function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', newTheme);
+        }
+	</script>
+
 	<h1> bandit16 writeup </h1>
 	<hr>
 	<p>
-		Hi everyone.<br> Today I will be showing how to solve bandit level 16 from <a href="https://overthewire.org/wargames/bandit/bandit17.html" target="_blank">overthewire.</a><br>
-		This is my first writeup, and first time making a site, I know it sucks ass, <br>web dev is not really my thing, but gotta grasp some basics about it. <br> This is just a part of the <a href="https://www.roppers.org/courses/fundamentals" target="_blank">course</a> I am taking, which I really recommend for<br> everyone starting out in IT. Dennis if you're reading this, then you rock,<br> you are the teacher I wished I had when I was just starting.
+		Hi everyone.<br> I will be going over how to solve bandit level 16 from <a href="https://overthewire.org/wargames/bandit/bandit17.html" target="_blank">overthewire.</a><br>
+		This is my first writeup, and first time making a site, I know it sucks ass, <br>web dev is not really my thing, but gotta grasp some basics about it. <br> This is just a part of the <a href="https://www.roppers.org/courses/fundamentals" target="_blank">course</a> I am taking, which I really recommend for<br> everyone starting out in IT. Dennis if you're reading this, then you rock,<br> you are the teacher I wished I had when I was just starting out.
 	</p>
+
 
 	<h2> Level description </h2>
 	<p>
